@@ -36,7 +36,7 @@ def __virtual__():
             ' only available on Linux, OpenBSD and NetBSD')
 
 
-def add(name, gid=None, system=False, root=None):
+def add(name, gid=None, system=False, root=None, unique=True):
     '''
     Add the specified group
 
@@ -51,6 +51,8 @@ def add(name, gid=None, system=False, root=None):
         cmd.append('-g {0}'.format(gid))
     if system and __grains__['kernel'] != 'OpenBSD':
         cmd.append('-r')
+    if not salt.utils.data.is_true(unique):
+        cmd.append('-o')
     cmd.append(name)
 
     if root is not None:

@@ -106,7 +106,8 @@ def present(name,
             system=False,
             addusers=None,
             delusers=None,
-            members=None):
+            members=None,
+            unique=True):
     r'''
     Ensure that a group is present
 
@@ -136,6 +137,9 @@ def present(name,
         members (list):
             Replace existing group members with a list of new members. Cannot be
             used in conjunction with addusers or delusers.
+
+        unique (bool):
+            Require a unique GID, Default is ``True``.
 
     Example:
 
@@ -236,7 +240,7 @@ def present(name,
 
         grps = __salt__['group.getent']()
         # Test if gid is free
-        if gid is not None:
+        if salt.utils.data.is_true(unique) and gid is not None:
             gid_group = None
             for lgrp in grps:
                 if lgrp['gid'] == gid:
@@ -251,7 +255,7 @@ def present(name,
                 return ret
 
         # Group is not present, make it.
-        if __salt__['group.add'](name, gid=gid, system=system):
+        if __salt__['group.add'](name, gid=gid, system=system, unique=unique):
             # if members to be added
             grp_members = None
             if members:

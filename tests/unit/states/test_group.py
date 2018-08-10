@@ -56,6 +56,7 @@ class GroupTestCase(TestCase, LoaderModuleMockMixin):
         mock = MagicMock(side_effect=[OrderedDict((('key0', 'value0'), ('key1', 'value1'))),
                                       False,
                                       False,
+                                      False,
                                       False])
         with patch.object(group, '_changes', mock):
             with patch.dict(group.__opts__, {"test": True}):
@@ -74,6 +75,10 @@ class GroupTestCase(TestCase, LoaderModuleMockMixin):
 
                     mock = MagicMock(return_value=False)
                     with patch.dict(group.__salt__, {'group.add': mock}):
+                        ret.update({'comment':
+                                    'Failed to create new group salt'})
+                        self.assertDictEqual(group.present("salt", 1, unique=False), ret)
+
                         ret.update({'comment':
                                     'Failed to create new group salt'})
                         self.assertDictEqual(group.present("salt"), ret)
